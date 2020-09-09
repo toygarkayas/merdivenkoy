@@ -1,4 +1,4 @@
-package webservice;
+package hello;
 
 import java.util.HashMap;
 import java.util.Map;

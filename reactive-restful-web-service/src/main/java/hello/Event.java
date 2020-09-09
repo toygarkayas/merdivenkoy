@@ -1,4 +1,4 @@
-package webservice;
+package hello;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
