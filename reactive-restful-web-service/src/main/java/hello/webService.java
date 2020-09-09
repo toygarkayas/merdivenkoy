@@ -9,5 +9,4 @@ public class webService {
 	public static void main(String[] args) {
 		SpringApplication.run(webService.class, args);
 	}
-
 }
