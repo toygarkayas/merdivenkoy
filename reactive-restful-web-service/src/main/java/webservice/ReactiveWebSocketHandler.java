@@ -1,4 +1,4 @@
-package hello;
+package webservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +35,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     private Flux<String> eventFlux = Flux.generate(sink -> {
         Event event = new Event(randomUUID().toString(), now().toString());
         try {
-            sink.next(json.writeValueAsString(event.getEventId() + " " + event.getEventDt()));
+            sink.next(json.writeValueAsString(event.getEventId() + " ------------------ " + event.getEventDt()));
         } catch (JsonProcessingException e) {
             sink.error(e);
         }
