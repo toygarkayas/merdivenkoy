@@ -1,4 +1,4 @@
-package hello;
+package webservice;
 
 import java.net.URI;
 import java.time.Duration;
