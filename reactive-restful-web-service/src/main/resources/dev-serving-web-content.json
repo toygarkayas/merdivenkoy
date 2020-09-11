@@ -1,0 +1,88 @@
+{
+  "_class" : "hudson.model.FreeStyleProject",
+  "actions" : [
+    {
+      
+    },
+    {
+      
+    },
+    {
+      
+    },
+    {
+      "_class" : "com.cloudbees.plugins.credentials.ViewCredentialsAction"
+    }
+  ],
+  "description" : "",
+  "displayName" : "serving-web-content",
+  "displayNameOrNull" : null,
+  "fullDisplayName" : "dev » serving-web-content",
+  "fullName" : "dev/serving-web-content",
+  "name" : "serving-web-content",
+  "url" : "http://localhost:8080/job/dev/job/serving-web-content/",
+  "buildable" : true,
+  "builds" : [
+    {
+      "_class" : "hudson.model.FreeStyleBuild",
+      "number" : 1,
+      "url" : "http://localhost:8080/job/dev/job/serving-web-content/1/"
+    }
+  ],
+  "color" : "blue",
+  "firstBuild" : {
+    "_class" : "hudson.model.FreeStyleBuild",
+    "number" : 1,
+    "url" : "http://localhost:8080/job/dev/job/serving-web-content/1/"
+  },
+  "healthReport" : [
+    {
+      "description" : "Yap?land?rma istikrar?: Son yap?land?rmalar?n hepsi ba?ar?l? oldu",
+      "iconClassName" : "icon-health-80plus",
+      "iconUrl" : "health-80plus.png",
+      "score" : 100
+    }
+  ],
+  "inQueue" : false,
+  "keepDependencies" : false,
+  "lastBuild" : {
+    "_class" : "hudson.model.FreeStyleBuild",
+    "number" : 1,
+    "url" : "http://localhost:8080/job/dev/job/serving-web-content/1/"
+  },
+  "lastCompletedBuild" : {
+    "_class" : "hudson.model.FreeStyleBuild",
+    "number" : 1,
+    "url" : "http://localhost:8080/job/dev/job/serving-web-content/1/"
+  },
+  "lastFailedBuild" : null,
+  "lastStableBuild" : {
+    "_class" : "hudson.model.FreeStyleBuild",
+    "number" : 1,
+    "url" : "http://localhost:8080/job/dev/job/serving-web-content/1/"
+  },
+  "lastSuccessfulBuild" : {
+    "_class" : "hudson.model.FreeStyleBuild",
+    "number" : 1,
+    "url" : "http://localhost:8080/job/dev/job/serving-web-content/1/"
+  },
+  "lastUnstableBuild" : null,
+  "lastUnsuccessfulBuild" : null,
+  "nextBuildNumber" : 2,
+  "property" : [
+    
+  ],
+  "queueItem" : null,
+  "concurrentBuild" : false,
+  "disabled" : false,
+  "downstreamProjects" : [
+    
+  ],
+  "labelExpression" : null,
+  "scm" : {
+    "_class" : "hudson.plugins.git.GitSCM"
+  },
+  "upstreamProjects" : [
+    
+  ]
+}

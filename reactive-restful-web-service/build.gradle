@@ -31,6 +31,10 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-integration')
     compile('org.projectlombok:lombok')
+    compile('org.json:json:20200518')
+    compile('com.googlecode.json-simple:json-simple:1.1')
+    compile('commons-io:commons-io:2.6')
+    compile('com.offbytwo.jenkins:jenkins-client:0.2.0')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
 }

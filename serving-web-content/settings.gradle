@@ -12,4 +12,4 @@ pluginManagement {
 		}
 	}
 }
-rootProject.name = 'servingwebcontent'
+rootProject.name = 'serving-web-content'
