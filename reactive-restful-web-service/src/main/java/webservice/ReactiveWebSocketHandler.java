@@ -1,6 +1,6 @@
 package webservice;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpHost;
@@ -18,6 +18,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -39,13 +41,13 @@ import java.io.IOException;
 @Component("ReactiveWebSocketHandler")
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    private static final ObjectMapper json = new ObjectMapper();
-    
+    //private static final ObjectMapper json = new ObjectMapper();
+    private String url,username="toygar",password="123456";	
+	private String [] folders = {"dev","prod","stable","stage"};
+	private String [] projects = {"reactive-restful-web-service","serving-web-content"};
+	
     public void getJenkinsContent()
             throws ClientProtocolException, IOException {
-			String url,username="toygar",password="123456";
-    		String [] folders = {"dev","prod","stable","stage"};
-    		String [] projects = {"reactive-restful-web-service","serving-web-content"};
     		for(String folderName : folders) {
     			for(String projectName : projects) {
         			url="http://localhost:8080/job/" + folderName + "/job/" + projectName + "/api/json?pretty=true";
@@ -75,12 +77,22 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     
     private Flux<String> eventFlux = Flux.generate(sink -> {
     	try {
-    		
-    		File file = new File("src/main/resources/dev-reactive-restful-web-service.json");
-    		File file2 = new File("src/main/resources/prod-reactive-restful-web-service.json");
-    		String tmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
-    		String tmp2 = FileUtils.readFileToString(file2,StandardCharsets.UTF_8);
-    		sink.next(json.writeValueAsString(tmp + "***********************************************" + tmp2));
+    		JSONArray jsonArray = new JSONArray();
+    		String jsonTmp;
+    		for(String folderName : folders) {
+    			for(String projectName : projects) {
+    				File file = new File("src/main/resources/"+ folderName + "-" + projectName + ".json");
+    				jsonTmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
+    				JSONObject jsonObject = new JSONObject(jsonTmp);
+    				JSONObject obj = new JSONObject();
+    				obj.put("folderName",folderName)
+    				.put("projectName", jsonObject.getString("name"))
+    				.put("color", jsonObject.getString("color"));
+    				jsonArray.put(obj);
+    				System.out.println(jsonArray.toString());
+    			}
+    		}
+    		sink.next(jsonArray.toString());
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
