@@ -7,11 +7,11 @@ clientWebSocket.onopen = function() {
 }
 clientWebSocket.onclose = function(error) {
     console.log("clientWebSocket.onclose", clientWebSocket, error);
-	document.querySelector(".events").innerHTML += "Closing connection <br>";
+	document.querySelector(".events").innerHTML += "<br>Closing connection";
 }
 clientWebSocket.onerror = function(error) {
     console.log("clientWebSocket.onerror", clientWebSocket, error);
-	document.write("An error occured <br>");
+	document.write("<br>An error occured");
 }
 clientWebSocket.onmessage = function(error) {
 	if(!initialized){
@@ -29,17 +29,24 @@ function init(initInfo){
 	var elementName;
 	for(var i in jsonFile){
 		elementName = jsonFile[i].folderName + "-" + jsonFile[i].projectName;
-		document.querySelector("." + jsonFile[i].folderName).innerHTML += "<div id= " + elementName + ">" + elementName +"</div>";
+		document.querySelector("." + jsonFile[i].folderName).innerHTML += "<div id= " + elementName + ">" + elementName + "<div id="+ elementName + "-color></div>" + "</div>";
 	}
 }
 
 function events(responseEvent) {
 	var jsonFile = JSON.parse(responseEvent);
+	var timer = new Date();
 	for(var i in jsonFile){
-		document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName).innerHTML = jsonFile[i].folderName + "-" + jsonFile[i].projectName + "--->  color = " + jsonFile[i].color;
+		if(document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML != jsonFile[i].color){
+			if(document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML != "")
+				document.querySelector(".events").innerHTML += "<br>Project = " + jsonFile[i].folderName + "-" + jsonFile[i].projectName +
+																"<b> ====> Old color was " + document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML +
+																" new color is " + jsonFile[i].color + "</b> ====> Time info : " + timer.getHours() + ":" + timer.getMinutes() + ":" + timer.getSeconds();
+			document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML = jsonFile[i].color;												
+		}
 	}
 	//printValues(jsonFile);	
-	//clientWebSocket.close(); for testing
+	//clientWebSocket.close(); //for testing
 }
 
 function printValues(obj) {
