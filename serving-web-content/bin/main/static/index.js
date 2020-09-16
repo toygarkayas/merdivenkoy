@@ -1,20 +1,25 @@
 var clientWebSocket = new WebSocket("ws://localhost:8090/event-emitter");
 var initialized = false;
-clientWebSocket.onopen = function() {
+clientWebSocket.addEventListener("open",webSocketOnOpen);
+clientWebSocket.addEventListener("close",webSocketOnClose);
+clientWebSocket.addEventListener("error",webSocketOnError);
+clientWebSocket.addEventListener("message",webSocketOnMessage);
+
+function webSocketOnOpen() {
     console.log("clientWebSocket.onopen", clientWebSocket);
     console.log("clientWebSocket.readyState", "websocketstatus");
     //clientWebSocket.send("event-me-from-browser");
 }
-clientWebSocket.onclose = function(error) {
+function webSocketOnClose(error) {
     console.log("clientWebSocket.onclose", clientWebSocket, error);
 	document.querySelector(".events").innerHTML += "<br>Closing connection";
 	setTimeout(tryToReconnect,5000);
 }
-clientWebSocket.onerror = function(error) {
+function webSocketOnError(error) {
     console.log("clientWebSocket.onerror", clientWebSocket, error);
 	document.write("<br>An error occured");
 }
-clientWebSocket.onmessage = function(error) {
+function webSocketOnMessage(error) {
 	if(!initialized){
 		init(error.data);
 		initialized = true;
@@ -62,8 +67,10 @@ function tryToReconnect(){
 	}
 	else{
 		document.querySelector(".events").innerHTML += "<br><b>Reconnected</b>";
-	    console.log("clientWebSocket.onopen", clientWebSocket);
-	    console.log("clientWebSocket.readyState", "websocketstatus");
+	    clientWebSocket.addEventListener("open",webSocketOnOpen);
+		clientWebSocket.addEventListener("close",webSocketOnClose);
+		clientWebSocket.addEventListener("error",webSocketOnError);
+		clientWebSocket.addEventListener("message",webSocketOnMessage);
 	}
 }
 
