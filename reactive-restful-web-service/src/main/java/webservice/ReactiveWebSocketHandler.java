@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,9 +43,11 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     //private static final ObjectMapper json = new ObjectMapper();
     private String url,username="toygar",password="123456";	
-	private String [] folders = {"dev","prod","stable","stage"};	
-	private String [] projects = {"reactive-restful-web-service","serving-web-content"};
-	//private ArrayList<String> projects = new ArrayList<String>();
+	private String [] folders = {"dev","prod","stable","stage"};
+	private GetProjectName names = new GetProjectName();
+	//private String [] projects = {"reactive-restful-web-service","serving-web-content"};
+	private ArrayList<String> projects = names.getProjects();
+	
     public void getJenkinsContent() throws ClientProtocolException, IOException {
     	for(String folderName : folders) {
 			for(String projectName : projects) {
@@ -73,39 +74,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     			file.close();
 			}
 		}
-    }
-    
-    /*public void getProjectsNames() throws ClientProtocolException, IOException {
-    	for(String folderName : folders) {
-        	url="http://localhost:8080/job/" + folderName + "/api/json?pretty=true";
-            URI uri = URI.create(url);
-            HttpHost host = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            credsProvider.setCredentials(new AuthScope(uri.getHost(), uri.getPort()),
-                new UsernamePasswordCredentials(username, password));
-            // Create AuthCache instance
-            AuthCache authCache = new BasicAuthCache();
-            // Generate BASIC scheme object and add it to the local auth cache
-            BasicScheme basicAuth = new BasicScheme();
-            authCache.put(host, basicAuth);
-            CloseableHttpClient httpClient =
-                HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
-            HttpGet httpGet = new HttpGet(uri);
-            // Add AuthCache to the execution context
-            HttpClientContext localContext = HttpClientContext.create();
-            localContext.setAuthCache(authCache);
-            CloseableHttpResponse response = httpClient.execute(host, httpGet, localContext);
-            JSONObject obj = new JSONObject(EntityUtils.toString(response.getEntity()));
-            JSONObject jsonTmp;
-            JSONArray jsonArray = obj.getJSONArray("jobs");
-            for(int i=0; i < obj.getJSONArray("jobs").length(); i++) {
-            	jsonTmp = jsonArray.getJSONObject(i);
-            	if(!projects.contains(jsonTmp.getString("name"))) { //can be changed if projects in all folders is not same
-            		projects.add(jsonTmp.getString("name"));
-            	}
-            }
-    	}
-    }*/
+    }       
     
     private Flux<String> eventFlux = Flux.generate(sink -> {
     	try {
@@ -113,7 +82,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     		String jsonTmp;
     		for(String folderName : folders) {
     			for(String projectName : projects) {
-    				File file = new File("src/main/resources/"+ folderName + "-" + projectName + ".json");
+    				File file = new File("src/main/resources/"+ folderName + "-" + projectName.toString() + ".json");
     				jsonTmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
     				JSONObject jsonObject = new JSONObject(jsonTmp);
     				JSONObject obj = new JSONObject();
@@ -129,7 +98,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     	}
     });
        
-    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(1000L))
+    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(10L))
       .zipWith(eventFlux, (time, event) -> event);
 
     @Override

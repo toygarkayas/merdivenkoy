@@ -8,6 +8,7 @@ clientWebSocket.onopen = function() {
 clientWebSocket.onclose = function(error) {
     console.log("clientWebSocket.onclose", clientWebSocket, error);
 	document.querySelector(".events").innerHTML += "<br>Closing connection";
+	setTimeout(tryToReconnect,5000);
 }
 clientWebSocket.onerror = function(error) {
     console.log("clientWebSocket.onerror", clientWebSocket, error);
@@ -38,15 +39,32 @@ function events(responseEvent) {
 	var timer = new Date();
 	for(var i in jsonFile){
 		if(document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML != jsonFile[i].color){
-			if(document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML != "")
+			if(document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML != ""){
 				document.querySelector(".events").innerHTML += "<br>Project = " + jsonFile[i].folderName + "-" + jsonFile[i].projectName +
 																"<b> ====> Old color was " + document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML +
-																" new color is " + jsonFile[i].color + "</b> ====> Time info : " + timer.getHours() + ":" + timer.getMinutes() + ":" + timer.getSeconds();
-			document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML = jsonFile[i].color;												
+																", new color is " + jsonFile[i].color + "</b> ====> Time info : " + timer.getHours() + ":" + timer.getMinutes() + ":" + timer.getSeconds();
+				window.alert("On project " + jsonFile[i].folderName + "-" + jsonFile[i].projectName +
+											", color is changed. Old color was " + document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML +
+											" new color is " + jsonFile[i].color + "\nTime info : " + timer.getHours() + ":" + timer.getMinutes() + ":" + timer.getSeconds());		
+			}				
+			document.getElementById(jsonFile[i].folderName + "-" + jsonFile[i].projectName + "-color").innerHTML = jsonFile[i].color;										
 		}
 	}
 	//printValues(jsonFile);	
 	//clientWebSocket.close(); //for testing
+}
+
+function tryToReconnect(){
+	document.querySelector(".events").innerHTML += "<br>Trying to reconnect...";
+	if(clientWebSocket.readyState != 1){
+		setTimeout(tryToReconnect,5000);
+		clientWebSocket = new WebSocket("ws://localhost:8090/event-emitter");
+	}
+	else{
+		document.querySelector(".events").innerHTML += "<br><b>Reconnected</b>";
+	    console.log("clientWebSocket.onopen", clientWebSocket);
+	    console.log("clientWebSocket.readyState", "websocketstatus");
+	}
 }
 
 function printValues(obj) {

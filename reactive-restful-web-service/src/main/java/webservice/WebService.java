@@ -12,7 +12,6 @@ public class WebService {
 	public static void main(String[] args) throws ClientProtocolException, IOException {
 		SpringApplication.run(WebService.class, args);
 		ReactiveWebSocketHandler a = new ReactiveWebSocketHandler();
-		//a.getProjectsNames();
 		a.getJenkinsContent();
 	}
 }
