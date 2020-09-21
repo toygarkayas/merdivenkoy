@@ -1,7 +1,5 @@
 package webservice;
 
-//import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -41,11 +39,9 @@ import java.io.IOException;
 @Component("ReactiveWebSocketHandler")
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    //private static final ObjectMapper json = new ObjectMapper();
     private String url,username="toygar",password="123456";	
 	private String [] folders = {"dev","prod","stable","stage"};
 	private GetProjectName names = new GetProjectName();
-	//private String [] projects = {"reactive-restful-web-service","serving-web-content"};
 	private ArrayList<String> projects = names.getProjects();
 	
     public void getJenkinsContent() throws ClientProtocolException, IOException {
@@ -74,22 +70,28 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     			file.close();
 			}
 		}
-    }       
+    }
+    
+    public JSONObject getJSONObject(String fileName,String folderName) throws IOException {
+    	String jsonTmp;
+    	File file = new File(fileName);
+		jsonTmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
+		JSONObject jsonObject = new JSONObject(jsonTmp);
+		JSONObject obj = new JSONObject();
+		obj.put("folderName",folderName)
+		.put("projectName", jsonObject.getString("name"))
+		.put("color", jsonObject.getString("color"));
+		return obj;
+    }
     
     private Flux<String> eventFlux = Flux.generate(sink -> {
     	try {
     		JSONArray jsonArray = new JSONArray();
-    		String jsonTmp;
+    		String fileName;
     		for(String folderName : folders) {
     			for(String projectName : projects) {
-    				File file = new File("src/main/resources/"+ folderName + "-" + projectName.toString() + ".json");
-    				jsonTmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
-    				JSONObject jsonObject = new JSONObject(jsonTmp);
-    				JSONObject obj = new JSONObject();
-    				obj.put("folderName",folderName)
-    				.put("projectName", jsonObject.getString("name"))
-    				.put("color", jsonObject.getString("color"));
-    				jsonArray.put(obj);
+    				fileName = "src/main/resources/"+ folderName + "-" + projectName.toString() + ".json";    				
+    				jsonArray.put(getJSONObject(fileName,folderName));
     			}
     		}
     		sink.next(jsonArray.toString());
@@ -98,7 +100,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     	}
     });
        
-    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(10L))
+    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(1000L))
       .zipWith(eventFlux, (time, event) -> event);
 
     @Override
