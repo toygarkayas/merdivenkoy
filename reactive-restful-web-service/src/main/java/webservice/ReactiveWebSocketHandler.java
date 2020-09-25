@@ -18,10 +18,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -43,6 +46,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 	private String [] folders = {"dev","prod","stable","stage"};
 	private GetProjectName names = new GetProjectName();
 	private ArrayList<String> projects = names.getProjects();
+	private ObjectMapper objectMapper = new ObjectMapper();
 	
     public void getJenkinsContent() throws ClientProtocolException, IOException {
     	for(String folderName : folders) {
@@ -73,14 +77,15 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     }
     
     public JSONObject getJSONObject(String fileName,String folderName) throws IOException {
-    	String jsonTmp;
+    	String jsonTmp = new String();
+    	JSONContent jsonContent = new JSONContent();
     	File file = new File(fileName);
 		jsonTmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
-		JSONObject jsonObject = new JSONObject(jsonTmp);
+		jsonContent = objectMapper.readValue(jsonTmp, JSONContent.class);
 		JSONObject obj = new JSONObject();
 		obj.put("folderName",folderName)
-		.put("projectName", jsonObject.getString("name"))
-		.put("color", jsonObject.getString("color"));
+		.put("projectName", jsonContent.getName())
+		.put("color", jsonContent.getColor());
 		return obj;
     }
     
@@ -100,14 +105,19 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     	}
     });
        
-    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(1000L))
+    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(100L))
       .zipWith(eventFlux, (time, event) -> event);
 
     @Override
     public Mono<Void> handle(WebSocketSession webSocketSession) {
-        return webSocketSession.send(intervalFlux
+    	return webSocketSession.send(intervalFlux
           .map(webSocketSession::textMessage))
           .and(webSocketSession.receive()
             .map(WebSocketMessage::getPayloadAsText).log());
+    }
+    
+    @Bean
+    public void init() throws ClientProtocolException, IOException {
+    	getJenkinsContent();
     }
 }

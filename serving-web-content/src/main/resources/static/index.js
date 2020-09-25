@@ -17,7 +17,8 @@ function webSocketOnClose(error) {
 }
 function webSocketOnError(error) {
     console.log("clientWebSocket.onerror", clientWebSocket, error);
-	document.write("<br>An error occured");
+	document.querySelector(".events").innerHTML += "<br>An error occured";
+	setTimeout(tryToReconnect,5000);
 }
 function webSocketOnMessage(error) {
 	if(!initialized){

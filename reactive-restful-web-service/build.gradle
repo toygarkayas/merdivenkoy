@@ -29,6 +29,9 @@ repositories {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
+    compile('org.springframework.boot:spring-boot-starter-quartz:2.3.4.RELEASE')
+    compile('org.quartz-scheduler:quartz')
+   // compile('org.springframework:spring-context-support')
     compile('org.springframework.boot:spring-boot-starter-integration')
     compile('org.projectlombok:lombok')
     compile('org.json:json:20200518')
