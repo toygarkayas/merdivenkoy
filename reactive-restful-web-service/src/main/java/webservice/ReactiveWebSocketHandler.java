@@ -1,25 +1,13 @@
 package webservice;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -28,9 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.net.URI;
-
 import java.nio.charset.StandardCharsets;
 
 import java.time.Duration;
@@ -42,7 +27,7 @@ import java.io.IOException;
 @Component("ReactiveWebSocketHandler")
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    private String url,username="toygar",password="123456";	
+    private String url;	
 	private String [] folders = {"dev","prod","stable","stage"};
 	private GetProjectName names = new GetProjectName();
 	private ArrayList<String> projects = names.getProjects();
@@ -52,25 +37,10 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     	for(String folderName : folders) {
 			for(String projectName : projects) {
     			url="http://localhost:8080/job/" + folderName + "/job/" + projectName + "/api/json?pretty=true";
-                URI uri = URI.create(url);
-                HttpHost host = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
-                CredentialsProvider credsProvider = new BasicCredentialsProvider();
-                credsProvider.setCredentials(new AuthScope(uri.getHost(), uri.getPort()),
-                    new UsernamePasswordCredentials(username, password));
-                // Create AuthCache instance
-                AuthCache authCache = new BasicAuthCache();
-                // Generate BASIC scheme object and add it to the local auth cache
-                BasicScheme basicAuth = new BasicScheme();
-                authCache.put(host, basicAuth);
-                CloseableHttpClient httpClient =
-                    HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
-                HttpGet httpGet = new HttpGet(uri);
-                // Add AuthCache to the execution context
-                HttpClientContext localContext = HttpClientContext.create();
-                localContext.setAuthCache(authCache);
-                CloseableHttpResponse response = httpClient.execute(host, httpGet, localContext);
+    			RestTemplate restTemplate = new RestTemplate();
+    			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     			FileWriter file = new FileWriter("src/main/resources/" + folderName + "-" + projectName + ".json");
-    			file.write(EntityUtils.toString(response.getEntity()));
+    			file.write(response.getBody());
     			file.close();
 			}
 		}

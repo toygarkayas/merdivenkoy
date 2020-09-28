@@ -1,23 +1,28 @@
 package webservice;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class ProjectColorTest {
-	protected JSONObject jsonObject = new JSONObject();
-	protected JSONArray jsonArray = new JSONArray();
-	protected ReactiveWebSocketHandler reactiveWebSocketHandler = new ReactiveWebSocketHandler();
+	
+	@Autowired
+	private ReactiveWebSocketHandler reactiveWebSocketHandler;
 	
 	@Test
-	public void projectsNamesTest() throws IOException {
-		String fileName = "src/test/resources/getProjectsNamesTest1.json";		
-        assertTrue(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("color").toString().equals("project-color-test1"));
+	public void projectsColorsTest() throws JSONException, IOException {
+		String fileName = "src/test/resources/getProjectsNamesTest1.json";
+		assertThat(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("color").toString()).isEqualTo("project-color-test1");
         fileName = "src/test/resources/getProjectsNamesTest2.json";
-        assertTrue(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("color").toString().equals("project-color-test2"));
+        assertThat(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("color").toString()).isEqualTo("project-color-test2");
 	}
 }

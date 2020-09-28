@@ -1,24 +1,28 @@
 package webservice;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class ProjectNameTest {
-	protected JSONObject jsonObject = new JSONObject();
-	protected JSONArray jsonArray = new JSONArray();
-	protected ReactiveWebSocketHandler reactiveWebSocketHandler = new ReactiveWebSocketHandler();
+	
+	@Autowired
+	private ReactiveWebSocketHandler reactiveWebSocketHandler;
 	
 	@Test
-	public void projectsNamesTest() throws IOException {
-		String fileName = "src/test/resources/getProjectsNamesTest1.json";		
-        assertTrue(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("projectName").toString().equals("project-name-test1"));
+	public void projectsNamesTest() throws JSONException, IOException {
+		String fileName = "src/test/resources/getProjectsNamesTest1.json";
+		assertThat(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("projectName").toString()).isEqualTo("project-name-test1");
         fileName = "src/test/resources/getProjectsNamesTest2.json";
-        assertTrue(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("projectName").toString().equals("project-name-test2"));
+        assertThat(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("projectName").toString()).isEqualTo("project-name-test2");
 	}
 }
