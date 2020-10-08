@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobService implements Job{
 	@Autowired
-	private ReactiveWebSocketHandler reactiveWebSocketHandler;
+	ReactiveWebSocketHandler reactiveWebSocketHandler;
 	
 	public void execute(JobExecutionContext context) throws JobExecutionException{
 		try {

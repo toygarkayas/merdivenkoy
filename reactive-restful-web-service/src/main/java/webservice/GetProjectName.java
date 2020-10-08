@@ -3,6 +3,7 @@ package webservice;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,14 +14,13 @@ import java.io.IOException;
 public class GetProjectName {
 	private String url;	
 	private String [] folders = {"dev","prod","stable","stage"};	
-	
+
+	@Bean
 	public ArrayList<String> getProjectsNames() throws ClientProtocolException, IOException {
 		ArrayList<String> projects = new ArrayList<String>();
 		for(String folderName : folders) {
 	    	url="http://localhost:8080/job/" + folderName + "/api/json?pretty=true";
-			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-	        JSONObject obj = new JSONObject(response.getBody());
+	        JSONObject obj = new JSONObject(getResponse());
 	        JSONObject jsonTmp;
 	        JSONArray jsonArray = obj.getJSONArray("jobs");
 	        for(int i=0; i < obj.getJSONArray("jobs").length(); i++) {
@@ -33,6 +33,7 @@ public class GetProjectName {
 		return projects;
 	}
 	
+	@Bean
 	public ArrayList<String> getProjects(){
 		ArrayList<String> projects = new ArrayList<String>();
 		try {
@@ -41,5 +42,11 @@ public class GetProjectName {
 			e.printStackTrace();
 		}		
 		return projects;
+	}
+	
+	public String getResponse() {
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+		return response.getBody();
 	}
 }

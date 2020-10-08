@@ -31,6 +31,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-quartz:2.3.4.RELEASE')
     compile('org.quartz-scheduler:quartz')
+    compile('org.mockito:mockito-core:2.11.0')
    // compile('org.springframework:spring-context-support')
     compile('org.springframework.boot:spring-boot-starter-test:2.2.6.RELEASE')
     compile('com.h2database:h2')

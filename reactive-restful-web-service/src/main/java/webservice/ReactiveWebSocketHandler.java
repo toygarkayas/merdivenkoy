@@ -5,6 +5,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -29,14 +30,33 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 
     private String url;	
 	private String [] folders = {"dev","prod","stable","stage"};
-	private GetProjectName names = new GetProjectName();
-	private ArrayList<String> projects = names.getProjects();
+	private GetProjectName names;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
+	public ReactiveWebSocketHandler(@Lazy GetProjectName name) {
+		super();
+		this.names = name;
+	}
+	
+	@Bean
+	public GetProjectName getGetProjectName() {
+		return new GetProjectName();
+	}
+	
+	public ArrayList<String> getProjectNames(){
+		return names.getProjects();
+	}
+	
+    @Bean
+    public void init() throws ClientProtocolException, IOException {
+    	getJenkinsContent();
+    }
+	
     public void getJenkinsContent() throws ClientProtocolException, IOException {
+    	ArrayList<String> projects = getProjectNames();
     	for(String folderName : folders) {
 			for(String projectName : projects) {
-    			url="http://localhost:8080/job/" + folderName + "/job/" + projectName + "/api/json?pretty=true";
+    			url = getUrl(folderName,projectName);
     			RestTemplate restTemplate = new RestTemplate();
     			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     			FileWriter file = new FileWriter("src/main/resources/" + folderName + "-" + projectName + ".json");
@@ -61,6 +81,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     
     private Flux<String> eventFlux = Flux.generate(sink -> {
     	try {
+    		ArrayList<String> projects = getProjectNames();
     		JSONArray jsonArray = new JSONArray();
     		String fileName;
     		for(String folderName : folders) {
@@ -86,8 +107,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             .map(WebSocketMessage::getPayloadAsText).log());
     }
     
-    @Bean
-    public void init() throws ClientProtocolException, IOException {
-    	getJenkinsContent();
+    public String getUrl(String folderName,String projectName) {
+    	return "http://localhost:8080/job/" + folderName + "/job/" + projectName + "/api/json?pretty=true";
     }
 }

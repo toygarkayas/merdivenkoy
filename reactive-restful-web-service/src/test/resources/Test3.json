@@ -1,0 +1,50 @@
+{
+  "_class" : "com.cloudbees.hudson.plugins.folder.Folder",
+  "actions" : [
+    {
+      
+    },
+    {
+      
+    },
+    {
+      "_class" : "com.cloudbees.plugins.credentials.ViewCredentialsAction"
+    }
+  ],
+  "description" : "",
+  "displayName" : "dev",
+  "displayNameOrNull" : "dev",
+  "fullDisplayName" : "dev",
+  "fullName" : "dev",
+  "name" : "dev",
+  "url" : "http://localhost:8080/job/dev/",
+  "healthReport" : [
+    
+  ],
+  "jobs" : [
+    {
+      "_class" : "hudson.model.FreeStyleProject",
+      "name" : "project-name-test1",
+      "url" : "http://localhost:8080/job/dev/job/reactive-restful-web-service/",
+      "color" : "blue"
+    },
+    {
+      "_class" : "hudson.model.FreeStyleProject",
+      "name" : "project-name-test2",
+      "url" : "http://localhost:8080/job/dev/job/serving-web-content/",
+      "color" : "blue"
+    }
+  ],
+  "primaryView" : {
+    "_class" : "hudson.model.AllView",
+    "name" : "All",
+    "url" : "http://localhost:8080/job/dev/"
+  },
+  "views" : [
+    {
+      "_class" : "hudson.model.AllView",
+      "name" : "All",
+      "url" : "http://localhost:8080/job/dev/"
+    }
+  ]
+}

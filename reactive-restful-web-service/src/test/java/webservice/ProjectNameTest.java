@@ -20,9 +20,9 @@ public class ProjectNameTest {
 	
 	@Test
 	public void projectsNamesTest() throws JSONException, IOException {
-		String fileName = "src/test/resources/getProjectsNamesTest1.json";
+		String fileName = "src/test/resources/Test1.json";
 		assertThat(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("projectName").toString()).isEqualTo("project-name-test1");
-        fileName = "src/test/resources/getProjectsNamesTest2.json";
+        fileName = "src/test/resources/Test2.json";
         assertThat(reactiveWebSocketHandler.getJSONObject(fileName, "").getString("projectName").toString()).isEqualTo("project-name-test2");
 	}
 }

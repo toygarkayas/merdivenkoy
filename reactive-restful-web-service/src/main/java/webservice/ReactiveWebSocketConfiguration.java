@@ -102,7 +102,7 @@ public class ReactiveWebSocketConfiguration {
                 .forJob(jobDetail())
                 .withIdentity("getJenkinsContentTrigger")
                 .withDescription("gettingJenkinsContent")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(5).repeatForever())
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10).repeatForever())
                 .build();               
 //.withSchedule(CronScheduleBuilder.cronSchedule("0 0/1 * 1/1 * ? *"))
     }
