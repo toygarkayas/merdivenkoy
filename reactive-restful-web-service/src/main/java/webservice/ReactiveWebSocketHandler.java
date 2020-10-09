@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,12 +29,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 @Component("ReactiveWebSocketHandler")
-public class ReactiveWebSocketHandler implements WebSocketHandler {
+public class ReactiveWebSocketHandler implements WebSocketHandler,InitializingBean {
 
+	private final static Logger logger = LoggerFactory.getLogger(LoggingController.class);
     private String url;	
 	private String [] folders = {"dev","prod","stable","stage"};
 	private GetProjectName names;
 	private ObjectMapper objectMapper = new ObjectMapper();
+	
+	public void afterPropertiesSet() throws ClientProtocolException, NullPointerException, IOException {
+		logger.info("InitializingBean is working...");
+		getJenkinsContent();
+		getProjectNames();
+	}
+	
+	public void destroy() {
+		logger.info("All beans are destroyed.");
+	}
 	
 	public ReactiveWebSocketHandler(@Lazy GetProjectName name) {
 		super();
@@ -47,13 +61,12 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
 		return names.getProjects();
 	}
 	
-    @Bean
-    public void init() throws ClientProtocolException, IOException {
-    	getJenkinsContent();
-    }
-	
-    public void getJenkinsContent() throws ClientProtocolException, IOException {
+    public void getJenkinsContent() throws ClientProtocolException, IOException,NullPointerException {
     	ArrayList<String> projects = getProjectNames();
+    	if(projects == null) {
+    		logger.error("Error occured while getting project names.");
+    		throw new NullPointerException("Error occured while getting project names.");
+    	}
     	for(String folderName : folders) {
 			for(String projectName : projects) {
     			url = getUrl(folderName,projectName);
@@ -64,6 +77,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
     			file.close();
 			}
 		}
+    	logger.info("Got jenkins content.");
     }
     
     public JSONObject getJSONObject(String fileName,String folderName) throws IOException {

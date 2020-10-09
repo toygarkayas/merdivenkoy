@@ -30,6 +30,8 @@ public class GetProjectName {
 	        	}
 	        }
 		}
+		if(projects.size() == 0)
+			return null;
 		return projects;
 	}
 	

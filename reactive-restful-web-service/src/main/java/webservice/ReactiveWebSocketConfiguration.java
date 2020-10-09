@@ -12,6 +12,8 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -29,6 +31,8 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 @Configuration
 public class ReactiveWebSocketConfiguration {
 	
+	private final static Logger logger = LoggerFactory.getLogger(LoggingController.class);
+	
     @Autowired
     @Qualifier("ReactiveWebSocketHandler")
     private WebSocketHandler webSocketHandler;
@@ -38,7 +42,6 @@ public class ReactiveWebSocketConfiguration {
 
     @Bean
     public HandlerMapping webSocketHandlerMapping() {
-
         Map<String, WebSocketHandler> map = new HashMap<>();
         map.put("/event-emitter", webSocketHandler);
         SimpleUrlHandlerMapping handlerMapping = new SimpleUrlHandlerMapping();
@@ -54,7 +57,7 @@ public class ReactiveWebSocketConfiguration {
     
     @Bean
     public SpringBeanJobFactory springBeanJobFactory() {
-    	System.out.println("springBeanJobFactory is working");
+    	logger.info("springBeanJobFactory is working");
     	AutoWiringSpringBeanJobFactory jobFactory = new AutoWiringSpringBeanJobFactory();
         jobFactory.setApplicationContext(applicationContext);
         return jobFactory;
@@ -62,7 +65,7 @@ public class ReactiveWebSocketConfiguration {
 
     @Bean
     public Scheduler jobScheduler() throws SchedulerException, IOException {
-    	System.out.println("jobScheduler is working");
+    	logger.info("jobScheduler is working");
     	SchedulerFactoryBean factory = schedulerFactoryBean();
     	Scheduler scheduler = factory.getScheduler();
         scheduler.scheduleJob(jobDetail(),jobTrigger());
@@ -72,7 +75,7 @@ public class ReactiveWebSocketConfiguration {
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean() throws IOException {
-    	System.out.println("schedulerFactoryBean is working");
+    	logger.info("schedulerFactoryBean is working");
     	SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setJobFactory(springBeanJobFactory());
         factory.setQuartzProperties(quartzProperties());
@@ -80,7 +83,7 @@ public class ReactiveWebSocketConfiguration {
     }
 
     public Properties quartzProperties() throws IOException {
-    	System.out.println("quartzProperties is working");
+    	logger.info("quartzProperties is working");
     	PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
         propertiesFactoryBean.setLocation(new ClassPathResource("quartz.properties"));
         propertiesFactoryBean.afterPropertiesSet();
@@ -90,14 +93,14 @@ public class ReactiveWebSocketConfiguration {
     
     @Bean
     public JobDetail jobDetail() {
-    	System.out.println("jobDetail is working");
+    	logger.info("jobDetail is working");
     	return JobBuilder.newJob(JobService.class).withIdentity("getJenkinsContentJob")
                 .withDescription("jenkinsContent").storeDurably().build();
     }
 
     @Bean
     public Trigger jobTrigger() {
-        System.out.println("jobTrigger is working");
+    	logger.info("jobTrigger is working");
     	return TriggerBuilder.newTrigger()
                 .forJob(jobDetail())
                 .withIdentity("getJenkinsContentTrigger")
