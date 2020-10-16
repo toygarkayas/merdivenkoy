@@ -2,7 +2,6 @@ package webservice;
 
 import java.io.IOException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -17,11 +16,7 @@ public class JobService implements Job{
 	public void execute(JobExecutionContext context) throws JobExecutionException{
 		try {
 			reactiveWebSocketHandler.getJenkinsContent();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

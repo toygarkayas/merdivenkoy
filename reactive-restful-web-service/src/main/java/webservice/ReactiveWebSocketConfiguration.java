@@ -31,7 +31,7 @@ import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAd
 @Configuration
 public class ReactiveWebSocketConfiguration {
 	
-	private final static Logger logger = LoggerFactory.getLogger(LoggingController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReactiveWebSocketConfiguration.class);
 	
     @Autowired
     @Qualifier("ReactiveWebSocketHandler")

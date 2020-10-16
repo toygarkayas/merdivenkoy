@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoggingController {
-	 private final static Logger logger = LoggerFactory.getLogger(LoggingController.class);
+	 private static final Logger logger = LoggerFactory.getLogger(LoggingController.class);
 
 	    @GetMapping("/")
 	    public String index() {

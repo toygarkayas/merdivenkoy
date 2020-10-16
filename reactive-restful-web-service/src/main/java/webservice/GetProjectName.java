@@ -1,6 +1,5 @@
 package webservice;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Bean;
@@ -8,16 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-
-import java.io.IOException;
+import java.util.List;
 
 public class GetProjectName {
 	private String url;	
 	private String [] folders = {"dev","prod","stable","stage"};	
 
 	@Bean
-	public ArrayList<String> getProjectsNames() throws ClientProtocolException, IOException {
-		ArrayList<String> projects = new ArrayList<String>();
+	public List<String> getProjectsNames() {
+		List<String> projects = new ArrayList<>();
 		for(String folderName : folders) {
 	    	url="http://localhost:8080/job/" + folderName + "/api/json?pretty=true";
 	        JSONObject obj = new JSONObject(getResponse());
@@ -30,14 +28,14 @@ public class GetProjectName {
 	        	}
 	        }
 		}
-		if(projects.size() == 0)
+		if(projects.isEmpty())
 			return null;
 		return projects;
 	}
 	
 	@Bean
-	public ArrayList<String> getProjects(){
-		ArrayList<String> projects = new ArrayList<String>();
+	public List<String> getProjects(){
+		List<String> projects = null;
 		try {
 			projects = this.getProjectsNames();
 		} catch (Exception e) {

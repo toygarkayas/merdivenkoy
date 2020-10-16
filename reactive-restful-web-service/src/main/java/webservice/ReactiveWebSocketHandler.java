@@ -1,10 +1,10 @@
 package webservice;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 import java.nio.charset.StandardCharsets;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.List;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,13 +31,15 @@ import java.io.IOException;
 @Component("ReactiveWebSocketHandler")
 public class ReactiveWebSocketHandler implements WebSocketHandler,InitializingBean {
 
-	private final static Logger logger = LoggerFactory.getLogger(LoggingController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReactiveWebSocketHandler.class);
     private String url;	
 	private String [] folders = {"dev","prod","stable","stage"};
-	private GetProjectName names;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-	public void afterPropertiesSet() throws ClientProtocolException, NullPointerException, IOException {
+	@Autowired
+	GetProjectName names;
+	
+	public void afterPropertiesSet() throws IOException {
 		logger.info("InitializingBean is working...");
 		getJenkinsContent();
 		getProjectNames();
@@ -57,12 +59,12 @@ public class ReactiveWebSocketHandler implements WebSocketHandler,InitializingBe
 		return new GetProjectName();
 	}
 	
-	public ArrayList<String> getProjectNames(){
+	public List<String> getProjectNames(){
 		return names.getProjects();
 	}
 	
-    public void getJenkinsContent() throws ClientProtocolException, IOException,NullPointerException {
-    	ArrayList<String> projects = getProjectNames();
+    public void getJenkinsContent() throws IOException {
+    	List<String> projects = getProjectNames();
     	if(projects == null) {
     		logger.error("Error occured while getting project names.");
     		throw new NullPointerException("Error occured while getting project names.");
@@ -81,8 +83,8 @@ public class ReactiveWebSocketHandler implements WebSocketHandler,InitializingBe
     }
     
     public JSONObject getJSONObject(String fileName,String folderName) throws IOException {
-    	String jsonTmp = new String();
-    	JSONContent jsonContent = new JSONContent();
+    	String jsonTmp;
+    	JSONContent jsonContent;
     	File file = new File(fileName);
 		jsonTmp = FileUtils.readFileToString(file,StandardCharsets.UTF_8);
 		jsonContent = objectMapper.readValue(jsonTmp, JSONContent.class);
@@ -95,12 +97,12 @@ public class ReactiveWebSocketHandler implements WebSocketHandler,InitializingBe
     
     private Flux<String> eventFlux = Flux.generate(sink -> {
     	try {
-    		ArrayList<String> projects = getProjectNames();
+    		List<String> projects = getProjectNames();
     		JSONArray jsonArray = new JSONArray();
     		String fileName;
     		for(String folderName : folders) {
     			for(String projectName : projects) {
-    				fileName = "src/main/resources/"+ folderName + "-" + projectName.toString() + ".json";    				
+    				fileName = "src/main/resources/"+ folderName + "-" + projectName + ".json";    				
     				jsonArray.put(getJSONObject(fileName,folderName));
     			}
     		}
